@@ -14,6 +14,7 @@ class _secondPageState extends State<secondPage> {
   int maxduration = 100;
   int currentpos = 0;
   String currentpostlabel = "00:00";
+  String maxdurationlabel = "00:00";
   String audioasset = "assets/audio/Darkside.mp3";
   bool isplaying = false;
   bool audioplayed = false;
@@ -30,6 +31,17 @@ class _secondPageState extends State<secondPage> {
 
       player.onDurationChanged.listen((Duration d) {
         maxduration = d.inMilliseconds;
+
+        int mhours = Duration(milliseconds: maxduration).inHours;
+        int mminutes = Duration(milliseconds: maxduration).inMinutes;
+        int mseconds = Duration(milliseconds: maxduration).inSeconds;
+
+        int hhours = mhours;
+        int hminutes = mminutes - (mhours * 60);
+        int hseconds = mseconds - (mminutes * 60 + mhours * 60 * 60);
+
+        maxdurationlabel = "$hhours:$hminutes:$hseconds";
+
         setState(() {});
       });
 
@@ -64,54 +76,77 @@ class _secondPageState extends State<secondPage> {
                 fit: BoxFit.cover),
           ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: height * 0.6,
-            ),
-            Text(
-              "Speed: Normal",
-              style: TextStyle(color: Colors.white),
-            ),
-            Row(children: [
-              Container(
-                child: Text(
-                  currentpostlabel,
-                  style: TextStyle(fontSize: 25, color: Colors.white),
+        Container(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: height * 0.6,
+              ),
+              Text(
+                "Speed: Normal",
+                style: TextStyle(color: Colors.white),
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                  child: Text(
+                    currentpostlabel,
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ),
                 ),
+                Container(
+                  child: Slider(
+                    activeColor: Colors.white,
+                    inactiveColor: Colors.grey,
+                    value: double.parse(currentpos.toString()),
+                    min: 0,
+                    max: double.parse(maxduration.toString()),
+                    divisions: maxduration,
+                    label: currentpostlabel,
+                    onChanged: (double value) async {
+                      int seekval = value.round();
+                      int result =
+                          await player.seek(Duration(milliseconds: seekval));
+                      if (result == 1) {
+                        currentpos = seekval;
+                      } else {
+                        print("Seek Unsuccessful.");
+                      }
+                    },
+                  ),
+                ),
+                Container(
+                  child: Text(
+                    maxdurationlabel,
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                ),
+              ]),
+              SizedBox(
+                height: height * 0.05,
               ),
               Container(
-                child: Slider(
-                  value: double.parse(currentpos.toString()),
-                  min: 0,
-                  max: double.parse(maxduration.toString()),
-                  divisions: maxduration,
-                  label: currentpostlabel,
-                  onChanged: (double value) async {
-                    int seekval = value.round();
-                    int result =
-                        await player.seek(Duration(milliseconds: seekval));
-                    if (result == 1) {
-                      currentpos = seekval;
-                    } else {
-                      print("Seek Unsuccessful.");
-                    }
-                  },
-                ),
-              ),
-              Container(
-                child: Text(
-                  maxduration.toString(),
-                  style: TextStyle(fontSize: 25, color: Colors.white),
-                ),
-              ),
-            ]),
-            Container(
-              child: Wrap(
+                  child: Wrap(
                 spacing: 10,
                 children: [
-                  ElevatedButton.icon(
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: CircleBorder(),
+                          fixedSize: Size(80, 70)),
+                      onPressed: () {},
+                      child: Icon(
+                        Icons.fast_rewind,
+                        size: 48,
+                      )),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          shape: CircleBorder(),
+                          fixedSize: Size(70, 70)),
                       onPressed: () async {
                         if (!isplaying && !audioplayed) {
                           int result = await player.playBytes(audiobytes);
@@ -147,29 +182,88 @@ class _secondPageState extends State<secondPage> {
                           }
                         }
                       },
-                      icon: Icon(isplaying ? Icons.pause : Icons.play_arrow),
-                      label: Text(isplaying ? "Pause" : "Play")),
-                  ElevatedButton.icon(
-                      onPressed: () async {
-                        int result = await player.stop();
-                        if (result == 1) {
-                          //stop success
-                          setState(() {
-                            isplaying = false;
-                            audioplayed = false;
-                            currentpos = 0;
-                          });
-                        } else {
-                          print("Error on stop audio.");
-                        }
-                      },
-                      icon: Icon(Icons.stop),
-                      label: Text("Stop")),
+                      child: Icon(
+                        isplaying ? Icons.pause : Icons.play_arrow,
+                        size: 38,
+                        color: Color(0xff499595),
+                      )),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: CircleBorder(),
+                          fixedSize: Size(80, 70)),
+                      onPressed: () {},
+                      child: Icon(
+                        Icons.fast_forward,
+                        size: 46,
+                      )),
                 ],
-              ),
-            )
-            // Slider(value: value, onChanged: onChanged),
-          ],
+              )),
+              // Container(
+              //   child: Wrap(
+              //     spacing: 10,
+              //     children: [
+              //       ElevatedButton.icon(
+              //           onPressed: () async {
+              //             if (!isplaying && !audioplayed) {
+              //               int result = await player.playBytes(audiobytes);
+              //               if (result == 1) {
+              //                 //play success
+              //                 setState(() {
+              //                   isplaying = true;
+              //                   audioplayed = true;
+              //                 });
+              //               } else {
+              //                 print("Error while playing audio.");
+              //               }
+              //             } else if (audioplayed && !isplaying) {
+              //               int result = await player.resume();
+              //               if (result == 1) {
+              //                 //resume success
+              //                 setState(() {
+              //                   isplaying = true;
+              //                   audioplayed = true;
+              //                 });
+              //               } else {
+              //                 print("Error on resume audio.");
+              //               }
+              //             } else {
+              //               int result = await player.pause();
+              //               if (result == 1) {
+              //                 //pause success
+              //                 setState(() {
+              //                   isplaying = false;
+              //                 });
+              //               } else {
+              //                 print("Error on pause audio.");
+              //               }
+              //             }
+              //           },
+              //           icon: Icon(isplaying ? Icons.pause : Icons.play_arrow),
+              //           label: Text(isplaying ? "Pause" : "Play")),
+              //       ElevatedButton.icon(
+              //           onPressed: () async {
+              //             int result = await player.stop();
+              //             if (result == 1) {
+              //               //stop success
+              //               setState(() {
+              //                 isplaying = false;
+              //                 audioplayed = false;
+              //                 currentpos = 0;
+              //               });
+              //             } else {
+              //               print("Error on stop audio.");
+              //             }
+              //           },
+              //           icon: Icon(Icons.stop),
+              //           label: Text("Stop")),
+              //     ],
+              //   ),
+              // )
+              // Slider(value: value, onChanged: onChanged),
+            ],
+          ),
         )
       ]),
     );

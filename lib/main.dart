@@ -1,4 +1,4 @@
-import 'package:danau_toba/secondPage.dart';
+import 'package:danau_toba/firstPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,8 @@ class myApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: secondPage(),
+      debugShowCheckedModeBanner: false,
+      home: firstPage(),
     );
   }
 }

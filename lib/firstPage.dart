@@ -1,3 +1,6 @@
+import 'dart:html';
+
+import 'package:danau_toba/secondPage.dart';
 import 'package:flutter/material.dart';
 
 class firstPage extends StatelessWidget {
@@ -40,7 +43,10 @@ class firstPage extends StatelessWidget {
             width: width * 0.8,
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(primary: Color(0xff499595)),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => secondPage()));
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [Icon(Icons.play_arrow), Text("Play The Audio")],
