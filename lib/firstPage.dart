@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:danau_toba/secondPage.dart';
 import 'package:flutter/material.dart';
 

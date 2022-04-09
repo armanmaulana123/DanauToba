@@ -13,9 +13,11 @@ class secondPage extends StatefulWidget {
 class _secondPageState extends State<secondPage> {
   int maxduration = 100;
   int currentpos = 0;
+  String textHolder = "Speed: Normal";
+  double speed = 1;
   String currentpostlabel = "00:00";
   String maxdurationlabel = "00:00";
-  String audioasset = "assets/audio/Darkside.mp3";
+  String audioasset = "assets/audio/audioToba.mp3";
   bool isplaying = false;
   bool audioplayed = false;
   late Uint8List audiobytes;
@@ -86,7 +88,7 @@ class _secondPageState extends State<secondPage> {
                 height: height * 0.6,
               ),
               Text(
-                "Speed: Normal",
+                "$textHolder",
                 style: TextStyle(color: Colors.white),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -137,7 +139,32 @@ class _secondPageState extends State<secondPage> {
                           shadowColor: Colors.transparent,
                           shape: CircleBorder(),
                           fixedSize: Size(80, 70)),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (speed > 1 && speed <= 2) {
+                          player.setPlaybackRate(1.0);
+                          speed = speed / 2;
+                          setState(() {
+                            textHolder = "Speed: Normal";
+                          });
+                        } else if (speed > 2 && speed <= 4) {
+                          player.setPlaybackRate(1.5);
+                          speed = speed / 2;
+                          setState(() {
+                            textHolder = "Speed: $speed" + "X";
+                          });
+                        } else if (speed == 1) {
+                          player.setPlaybackRate(0.5);
+                          speed = 1 / 2;
+                          setState(() {
+                            textHolder = "Speed: 0.5X";
+                          });
+                        } else if (speed <= 0.5) {
+                          print("Minimum Speed");
+                          setState(() {
+                            textHolder = "Speed: 0.5X";
+                          });
+                        }
+                      },
                       child: Icon(
                         Icons.fast_rewind,
                         size: 48,
@@ -193,7 +220,29 @@ class _secondPageState extends State<secondPage> {
                           shadowColor: Colors.transparent,
                           shape: CircleBorder(),
                           fixedSize: Size(80, 70)),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (speed < 2 && speed > 0.5) {
+                          player.setPlaybackRate(1.5);
+                          speed = speed * 2;
+                          setState(() {
+                            textHolder = "Speed: $speed" + "X";
+                          });
+                        } else if (speed < 4 && speed >= 2) {
+                          player.setPlaybackRate(2.0);
+                          speed = speed * 2;
+                          setState(() {
+                            textHolder = "Speed: $speed" + "X";
+                          });
+                        } else if (speed == 0.5) {
+                          player.setPlaybackRate(1.0);
+                          speed = speed * 2;
+                          setState(() {
+                            textHolder = "Speed: Normal";
+                          });
+                        } else if (speed >= 4) {
+                          print("Maximum Speed");
+                        }
+                      },
                       child: Icon(
                         Icons.fast_forward,
                         size: 46,
